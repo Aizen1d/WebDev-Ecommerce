@@ -1,0 +1,41 @@
+.custom-navbar {
+    background-color:rgba(186, 176, 127, 0.39);;
+    font-family: 'Raleway', sans-serif;
+    font-size: large;
+    margin-top: 1.5% !important;
+    align-items: center !important;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+.logo {
+    text-align: end;
+    padding-left: 7%;
+}
+
+.slide{
+    background-color: #BAB07F !important;
+    width: 300px !important;
+}
+
+.close{
+    position: absolute;
+    right: 45px;
+    padding: 5px;
+    margin-top: 10px !important;
+    font-size: x-large;
+    opacity: 1;
+}
+
+.searchb{
+    text-align: left !important;
+}
+
+.burger{
+    text-align: end !important;
+    margin-left: 40%;
+}
+
+.profile-dropdown{
+    text-align: right;
+}
