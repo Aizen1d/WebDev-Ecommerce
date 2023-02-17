@@ -1,0 +1,54 @@
+html{
+    background-image: url('Default-background.jpg'); 
+    background-size: cover; 
+    background-repeat: no-repeat;
+}
+
+body {
+    background: transparent;
+}
+
+.upload{
+    margin-top: 1.5%;
+    background-color: #F8F9FA;
+    padding: 1%;
+    margin-bottom: 1.5%;
+    width: 50%;
+}
+
+.form-group{
+    padding-bottom: 15px;
+}
+
+.cancelbtn{
+    border: none;
+    padding: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    color: white;
+    background-color: #8f8f8f;
+    border-radius: 2px;
+    margin-right: 1%;
+}
+
+.cancelbtn:hover{
+    background-color: #717171;
+}
+
+.savebtn{
+    border: none;
+    padding: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    color: white;
+    background-color: #91ba7f;
+    border-radius: 2px;
+}
+
+.savebtn:hover{
+    background-color: #759866;
+}
+
+.button{
+    text-align: end;
+}
