@@ -1,0 +1,70 @@
+html{
+    background-image: url('Default-background.jpg'); 
+    background-size: cover; 
+    background-repeat: no-repeat;
+}
+
+body {
+    background: transparent;
+}
+
+.list{
+    margin-top: 1.5%;
+    justify-content: center !important;
+    background-color: #F8F9FA;
+    padding: 1.5%;
+    text-align: justify;
+}
+
+.head{
+    background-color: #ebeced;
+}
+
+.title h1{
+    font-size: xx-large;
+    margin-top: 2%;
+}
+
+.tbl{
+    border-radius: 25px;
+    margin-top: 2.5%;
+}
+
+.btn{
+    text-align: end;
+}
+
+.addbtn{
+    border: none;
+    padding: 10px;
+    padding-left: 50px;
+    padding-right: 50px;
+    color: white;
+    background-color: #76a6da;
+    border-radius: 2px;
+}
+
+.addbtn:hover{
+    background-color: #6189b4;
+}
+
+.icon{
+    border: transparent;
+    background-color: transparent;
+}
+
+.icon:hover{
+    transform: scale(1.2);
+}
+
+.red{
+    filter: invert(23%) sepia(71%) saturate(6803%) hue-rotate(354deg) brightness(94%) contrast(123%);
+}
+
+.green{
+    filter: invert(36%) sepia(79%) saturate(605%) hue-rotate(73deg) brightness(97%) contrast(85%);
+}
+
+.center{
+    text-align: center !important;
+}
