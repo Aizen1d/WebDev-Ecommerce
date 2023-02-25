@@ -30,10 +30,10 @@
     <?php include("navbar.php") ?>
 
     <section class="main py-5">
-        <div class="container-lg py-5">
+        <div class="container-sm py-5">
             <div class="row py-5">
                 <div class="col-sm-6 text-group">
-                    <h1 class="py-5" style="color: #846D62;">Insta-<span class="multiText" style="color: #A8A29C">Rare</span></h1>
+                    <img src="/images/home.png" width="300px" alt="" class="logoimg">
                     <p class="paragraph">With a focus on quality and affordability, we strive to bring you the best shopping experience possible. 
                     Browse our collection today and find the perfect item for your unique style. Start shopping now!</p>
                     
@@ -56,8 +56,7 @@
                 </div>
 
                 <div class="col-sm-6">
-                    <img class="model-image" src="/home-pics/home-bg.png" alt="image">
-                    <img class="splash-image" src="/home-pics/smoke-art.png" alt="image">
+                    <img class="model-image" src="/home-pics/girl.png" alt="image">
                 </div>
 
             </div>
