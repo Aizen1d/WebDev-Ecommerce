@@ -1,3 +1,7 @@
+<?php 
+    session_start(); 
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,114 +14,173 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet" type="text/css" href="css/checkout.css">
+    <script>
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-md custom-navbar navbar-dark">
-        <div class="col-2 logo">
-            <a href="#" class="navbar-brand navbar-logo">
-                <img src="pics/logo.png" width="115px" alt="logo">
-            </a>
-            
-        </div>
+    <?php if (!isset($_POST['cart-submitted']) && !isset($_POST['voucher-redeemed']) ) {
+        if (isset($_SESSION['voucherError']) && $_SESSION['voucherError'] == false) {
+            header("Location: /frontend/cart.php");
+            unset($_SESSION['voucherError']);
+            exit;
+        }
+    } 
+    ?>
 
-        <div class="col-5 offcanvas offcanvas-end slide" tabindex="-1" id="navmenu">
-            <div class="offcanvas-header">
-                <button type="button" class="btn-close btn-close-white text-reset close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>    
-            <div class="link">
-                <ul class="navbar-nav e-commerce-font-color">
-                    <li class="nav-item">
-                        <a href="#learn" class="nav-link ms-5 text-white">HOME</a>
-                    </li>
+    <?php 
+        if (isset($_SESSION['placeOrderDone']) && $_SESSION['placeOrderDone'] === true) {
+            header("Location: /frontend/cart.php");
+            unset($_SESSION['voucherError']);
+            exit;
+        }
+    ?>
 
-                    <li class="nav-item">
-                        <a href="#learn" class="nav-link ms-5 text-white">PRODUCTS</a>
-                    </li>
+    <?php if (isset($_SESSION['voucherError']) && $_SESSION['voucherError'] === true) : ?>
+        <div class="alert alert-danger fixed-top" role="alert" style="text-align:center; font-size: 18px;">
+            <?php echo "Voucher is invalid" ?>
+        </div>
+    <?php endif; ?>
 
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle ms-5 text-white" href="#" role="button" data-bs-toggle="dropdown">CATEGORIES</a>
-                        <ul class="dropdown-menu category">
-                            <li><a class="dropdown-item" href="#">T-Shirts</a></li>
-                            <li><a class="dropdown-item" href="#">Hoodies</a></li>
-                            <li><a class="dropdown-item" href="#">Shoes</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-3">
-            <div class="d-flex align-items-center">
-                <input class="form-control me-2 searchb" type="search" placeholder="Search" aria-label="Search"> 
-                <button class="btn bg-transparent" type="submit"><img src="pics/search.png" alt="search" width="40px"></button>
-                <button class="navbar-toggler burger" type="button" data-bs-toggle="offcanvas" data-bs-target="#navmenu" aria-controls="navbarOffcanvasLg">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-        </div>
-        <div class="col-2">
-            <button class="btn btn-nav px-4"><img src="pics/cart.png" alt="cart" width="40px"></button>
-            <div class="btn-group profile">
-                <button class="btn btn-nav" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-                    <img src="pics/login.png" alt="login" width="40px">
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end profile-dropdown">
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li><a class="dropdown-item" href="#">Sign up</a></li>
-                    <li><a class="dropdown-item" href="#">Login</a></li>
-                    <li><a class="dropdown-item" href="#">Logout</a></li>
-                </ul>
-            </div>
-            
-        </div>
-    </nav>
+    <?php 
+        $path = $_SERVER['DOCUMENT_ROOT'];
+        $path .= "/backend/database-connection.php";
+        include_once($path);
+
+        $userRecipientsAddress = array();
+        $userID = $_SESSION['loginID'];
+
+        $statement = $connection->prepare("SELECT * FROM address WHERE userID = ?");
+        $statement->bind_param("i", $userID);
+        $statement->execute();
+        $result = $statement->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+
+            $fullName = $row['fullName'];
+            $fullNameSplit = explode(' ', $fullName);
+
+            $userRecipientsAddress['recipientsFirstName'] = $fullNameSplit[0];
+            $userRecipientsAddress['recipientsLastName'] = $fullNameSplit[1];
+            $userRecipientsAddress['recipientsPhoneNumber'] = $row['phoneNumber'];
+            $userRecipientsAddress['recipientsPostalCode'] = $row['postalCode'];
+            $userRecipientsAddress['recipientsHouseAddress'] = $row['houseAddress']; 
+            $userRecipientsAddress['recipientsRegion'] = $row['region']; 
+            $userRecipientsAddress['recipientsProvince'] = $row['province']; 
+            $userRecipientsAddress['recipientsCity'] = $row['city']; 
+            $userRecipientsAddress['recipientsBarangay'] = $row['barangay']; 
+
+            $_SESSION['userRecipientsAddress'] = $userRecipientsAddress;
+        }
+    ?>
+
+    <?php include("navbar.php") ?>
+
+    <form action="/frontend/home.php" method="post" id="place-order-form">
+        <input type="hidden" id="first-name-input" name="first-name-input" value="">
+        <input type="hidden" id="last-name-input" name="last-name-input" value="">
+        <input type="hidden" id="phone-number-input" name="phone-number-input" value="">
+        <input type="hidden" id="region-input" name="region-input" value="">
+        <input type="hidden" id="province-input" name="province-input" value="">
+        <input type="hidden" id="city-input" name="city-input" value="">
+        <input type="hidden" id="barangay-input" name="barangay-input" value="">
+        <input type="hidden" id="address-input" name="address-input" value="">
+        <input type="hidden" id="postal-input" name="postal-input" value="">
+
+        <input type="hidden" id="payment-input" name="payment-input" value="">
+    </form>
 
     <div class="container checkout">
-        <div class="label">
-            <img src="/images/check.svg" alt="" width="45px" class="check">
-            <h1>Purchase Complete</h1>
-        </div>
-        
-
+        <h1>Checkout</h1>
         <div class="row">
             <div class="col left">
                 <h4>Recipient Address</h4>
                 <div class="row">
                     <div class="col-6 form-group">
                         <label class="form-label" for="firstname">First Name</label>
-                        <input readonly class="form-control-plaintext value" type="firstname" id="firstname" value="Nom">
+                        <input class="form-control validate-checkout" type="firstname" id="firstname" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsFirstName'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsFirstName']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your first name.
+                        </div>
                     </div>
                     <div class="col-6 form-group">
                         <label class="form-label" for="lastname">Last Name</label>
-                        <input readonly class="form-control-plaintext value" type="lastname" id="lastname" value="Nomi">
+                        <input class="form-control validate-checkout" type="lastname" id="lastname" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsLastName'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsLastName']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your last name.
+                        </div>
                     </div>
                     <div class="col-12 form-group">
                         <label class="form-label" for="phonenumber">Phone Number</label>
-                        <input readonly class="form-control-plaintext value" type="phonenumber" id="phonenumber" value="09957531901">
+                        <input class="form-control validate-checkout" type="phonenumber" id="phonenumber" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsPhoneNumber'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsPhoneNumber']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your phone number.
+                        </div>
                     </div>
                     <div class="col-6 form-group">
                         <label class="form-label" for="region">Region</label>
-                        <input readonly class="form-control-plaintext value" type="region" id="region" value="Region III">
+                        <input class="form-control validate-checkout" type="region" id="region"
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsRegion'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsRegion']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your region.
+                        </div>
                     </div>
                     <div class="col-6 form-group">
                         <label class="form-label" for="province">Province</label>
-                        <input readonly class="form-control-plaintext value" type="province" id="province" value="Zambales">
+                        <input class="form-control validate-checkout" type="province" id="province" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsProvince'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsProvince']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your province.
+                        </div>
                     </div>
                     <div class="col-6 form-group">
                         <label class="form-label" for="city">City</label>
-                        <input readonly class="form-control-plaintext value" type="city" id="city" value="San Marcelino">
+                        <input class="form-control validate-checkout" type="city" id="city" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsCity'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsCity']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your city.
+                        </div>
                     </div>
                     <div class="col-6 form-group">
                         <label class="form-label" for="barangay">Barangay</label>
-                        <input readonly class="form-control-plaintext value" type="barangay" id="barangay" value="Burgos">
+                        <input class="form-control validate-checkout" type="barangay" id="barangay"
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsBarangay'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsBarangay']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your barangay.
+                        </div>
                     </div>
                     <div class="col-12 form-group">
                         <label class="form-label" for="address">Street Name, Building, House No.</label>
-                        <input readonly class="form-control-plaintext value" type="address" id="address" value="37 Beltran St.">
+                        <input class="form-control validate-checkout" type="address" id="address" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsHouseAddress'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsHouseAddress']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your address.
+                        </div>
                     </div>
                     <div class="col-12 form-group">
                         <label class="form-label" for="code">Postal Code</label>
-                        <input readonly class="form-control-plaintext value" type="code" id="address" value="2207">
+                        <input class="form-control validate-checkout" type="code" id="postal" 
+                        value="<?php if(isset($_SESSION['userRecipientsAddress']['recipientsPostalCode'])) { 
+                                    echo $_SESSION['userRecipientsAddress']['recipientsPostalCode']; } ?>" required>
+                        <div class="invalid-feedback">
+                            Please enter your postal code.
+                        </div>
                     </div>
                 </div>
 
@@ -126,11 +189,11 @@
                 <h4>Payment</h4>
                 <div class="payment-method row">
                     <div class="col">
-                        <button class="cod">Cash on Delivery</button>
+                        <button class="cod" id="cod-method" data-value="cod">Cash on Delivery</button>
                     </div>
                     <div class="col">
-                        <button class="gcash"> 
-                            <img src="gcash.png" alt="" width="50px">
+                        <button class="gcash" id="gcash-method" data-value="gcash"> 
+                            <img src="/images/checkout/gcash.png" alt="" width="50px">
                             <span style="justify-content: center;">G-Cash</span>
                         </button>
                     </div>
@@ -155,77 +218,206 @@
                     </div>
 
                     <hr>
-
-                    <div class="flex-row d-flex align-items-center">
-                        <div class="product col-5 d-flex align-items-center">
-                            <img src="sample.jpg" width="100px" alt="">
-                            <div class="details d-flex flex-column">
-                                <div><h6>WATER IS LIFE T-SHIRT</h6></div>
-                                <div>Color:<span class="color">Black</span></div>
-                                <div>Size:<span class="size">Medium</span></div>
+                    
+                    <?php 
+                    $_SESSION['TotalPrice'] = 0.00;
+                    $_SESSION['TotalQuantity'] = 0;
+                        foreach ($_SESSION['cart'] as $item) {
+                            $item["image"] = base64_decode($item["image"]);
+                            echo'<div class="flex-row d-flex align-items-center">
+                                <div class="product col-5 d-flex align-items-center">
+                                    <img style="max-width: 100%; max-height: 100%; width: 100px; height: 100px;" 
+                                    src="data:image/jpeg;base64,' . base64_encode($item['image']) . '" alt="">
+                                    <div class="details d-flex flex-column">
+                                        <div><h6>'. $item['productName'] .'</h6></div>
+                                        <div>Color:<span class="color"> ' . $item['color'] .'</span></div>
+                                        <div>Size:<span class="size"> '. $item['size'] .'</span></div>
+                                    </div>
+                                </div>
+                                <div class="price-row col">₱'. $item['price'] .'</div>
+                                <div class="quantity-row col">
+                                    <input readonly class="form-control-plaintext input" type="number" name="qty" 
+                                    id="product'.$item['productID'].'" value="' .$item['quantity']. '">
+                                </div> 
+                                <div class="total-row col">₱'.$item['totalProductPrice'].'</div>
                             </div>
-                        </div>
-                        <div class="price-row col">₱450.00</div>
-                        <div class="quantity-row col">
-                            <input readonly class="form-control-plaintext input" type="number" name="qty" id="" value="1">
-                        </div> 
-                        <div class="total-row col">₱450.00</div>
-                    </div>    
-
-                    <hr>
-
+                            <hr>';   
+                            $_SESSION['TotalPrice'] = $_SESSION['TotalPrice'] + $item['totalProductPrice'];
+                            $_SESSION['TotalQuantity'] = $_SESSION['TotalQuantity'] + $item['quantity'];
+                        } ?>
                     <div class="total-price col">
-                        Total:<span>₱450.00</span> 
+                        Total:<span><?php echo("₱" . $_SESSION['TotalPrice']) ?></span> 
                     </div>
                 </div>
 
                 <hr class="my-4">
 
-                <h4>Voucher</h4>
+                <h4>Vouchers</h4>
 
-                <form class="voucher">
+                <form class="voucher" action="/backend/apply-voucher.php" method="post">
                     <div class="input-group">
-                        <input type="text" readonly class="form-control-plaintext value" placeholder="Voucher Code" value="SAVE10OFF">
+                        <input type="text" name="voucher-input" class="form-control" placeholder="Voucher Code"
+                        <?php if(isset($_SESSION['voucherCode'])) {
+                                    echo "value='".$_SESSION['voucherCode']."' readonly";
+                               }?>>
+
+                        <button type="submit" class="btn btn-secondary" 
+                            <?php if(isset($_SESSION['voucherCode'])) 
+                                    echo "disabled";?>
+                        >Redeem</button>
                     </div>
                 </form>
                 
                 <hr class="my-4">
+
+                <?php
+                if ($_SESSION['TotalQuantity'] >= 3) {
+                    $ShippingTotal = $_SESSION['TotalPrice'] / 2;
+                    $ShippingTotal = $ShippingTotal * 0.05;
+                    $ShippingTotal = $ShippingTotal + 50;
+                }
+                else {
+                    $ShippingTotal = 50;
+                }
+                
+                if (isset($_SESSION['voucherValue'])) {
+                    $_SESSION['GrandTotalPrice'] = round($_SESSION['TotalPrice'] + $ShippingTotal - $_SESSION['voucherValue'], 2);
+                }
+                else {
+                    $_SESSION['GrandTotalPrice'] = round($_SESSION['TotalPrice'] + $ShippingTotal, 2);
+                }
+
+                ?>
                 
                 <div class="grandtotal">
                     <div class="row align">
                         <div class="col-4"></div>
                         <div class="col-5 my-2">Merchandise Total:</div>
-                        <div class="col-3 payment my-2">₱450.00</div>
+                        <div class="col-3 payment my-2"><?php echo("₱" . $_SESSION['TotalPrice']) ?></div>
 
                         <div class="col-4"></div>
                         <div class="col-5 my-2">Shipping Total:</div>
-                        <div class="col-3 payment my-2">₱50.00</div>
+                        <div class="col-3 payment my-2"><?php echo("₱" . $ShippingTotal) ?></div>
 
-                        <div class="col-4"></div>
-                        <div class="col-5 my-2">Voucher Discount:</div>
-                        <div class="col-3 payment my-2"> - ₱50.00</div>
+                        <?php
+                            if (isset($_POST['voucher-redeemed']) && isset($_SESSION['voucherValue'])) {
+                                echo '<div class="col-4"></div>
+                                <div class="col-5 my-2" style="color: #ffae42;">Voucher Discount ('.$_SESSION['voucherPercentage'].'%):</div>
+                                <div class="col-3 payment my-2" style="color: #ffae42;"> - ₱'.$_SESSION['voucherValue'].'</div>';
+                            }
+                        ?>
 
                         <div class="col-4"></div>
                         <div class="col-5 my-2">Total Payment:</div>
-                        <div class="col-3 totalpayment">₱450.00</div>
+                        <div class="col-3 totalpayment"><?php echo("₱" . $_SESSION['GrandTotalPrice']);?></div>
 
                         <div class="button"> 
-
                             <hr>
-
-                            <button class="buybtn">Place Order</button>
+                            <button class="buybtn" type="button" onclick="validateForm()">Place Order</button>
                         </div>
-                        
                     </div>
-                    
-
                 </div>
+
+            <script>
+                const paymentButtons = document.querySelectorAll(".payment-method button");
+                let selectedPaymentButton;
+                                
+                paymentButtons.forEach(button => {
+                    button.addEventListener("click", () => {
+                        if (selectedPaymentButton) {
+                            selectedPaymentButton.classList.remove("selected");
+                        }
+                            selectedPaymentButton = button;
+                            selectedPaymentButton.classList.add("selected");
+                            const value = selectedPaymentButton.innerText;
+                        });
+                    });
+
+                function validateForm() {
+                    const inputs = document.querySelectorAll(".validate-checkout");
+                    const selectedPayment = document.querySelector(".payment-method button.selected");
+                    
+                    for (let i = 0; i < inputs.length; i++) {
+                        const input = inputs[i];
+
+                        if (input.value.trim() == "") {
+                            const errorMessage = document.createElement("div");
+                            errorMessage.classList.add("alert", "alert-danger", "fixed-top", "details-error");
+                            errorMessage.setAttribute("role", "alert");
+                            errorMessage.style.textAlign = "center";
+                            errorMessage.style.fontSize = "18px";
+                            errorMessage.innerText = "Please fill up all details";
+                            document.body.appendChild(errorMessage);
+                            errorMessage.style.opacity = "0";
+
+                            setTimeout(() => {
+                                errorMessage.style.opacity = "1";
+                                errorMessage.style.transition = "opacity 0.45s ease"; 
+                            }, 500)
+                            return;
+                        }
+                    }
+                    
+                    // check if payment method is selected
+                    if (!selectedPayment) {
+                        const errorMessage = document.createElement("div");
+                            errorMessage.classList.add("alert", "alert-danger", "fixed-top", "payment-error");
+                            errorMessage.setAttribute("role", "alert");
+                            errorMessage.style.textAlign = "center";
+                            errorMessage.style.fontSize = "18px";
+                            errorMessage.innerText = "Please select payment method below";
+                            document.body.appendChild(errorMessage);
+                            errorMessage.style.opacity = "0";
+
+                        setTimeout(() => {
+                            errorMessage.style.opacity = "1";
+                            errorMessage.style.transition = "opacity 0.45s ease"; 
+                        }, 500)
+                        return;
+                    }
+
+                    // remove DETAILS error message with transition fade away
+                    const detailError = document.querySelector(".details-error");
+                    if (detailError) {
+                        detailError.style.opacity = "0";
+                        setTimeout(() => {
+                            detailError.remove();
+                        }, 500)
+                    }
+                    
+                    // remove PAYMENT error message with transition fade away
+                    const paymentError = document.querySelector(".payment-error");
+                    if (paymentError) {
+                        paymentError.style.opacity = "0";
+                        setTimeout(() => {
+                            paymentError.remove();
+                        }, 500)
+                    }
+
+                    document.getElementById("first-name-input").value = document.getElementById("firstname").value 
+                    document.getElementById("last-name-input").value = document.getElementById("lastname").value 
+                    document.getElementById("phone-number-input").value = document.getElementById("lastname").value 
+                    document.getElementById("region-input").value = document.getElementById("region").value 
+                    document.getElementById("province-input").value = document.getElementById("province").value 
+                    document.getElementById("city-input").value = document.getElementById("city").value 
+                    document.getElementById("barangay-input").value = document.getElementById("barangay").value 
+                    document.getElementById("address-input").value = document.getElementById("address").value 
+                    document.getElementById("postal-input").value = document.getElementById("postal").value 
+
+                    document.getElementById("payment-input").value = selectedPayment.getAttribute("data-value");
+
+                    const form = document.getElementById('place-order-form');
+                    form.submit();
+                };
 
                 
 
+            </script>
             </div>
         </div>
     </div>
+
+    <?php include("footer.php") ?>
 
 </body>
 

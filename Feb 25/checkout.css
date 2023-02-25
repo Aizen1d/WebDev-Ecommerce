@@ -1,11 +1,11 @@
 html{
-    background-image: url('Default-background.jpg'); 
+    background-image: url('/images/Default-background.jpg'); 
     background-size: cover; 
     background-repeat: no-repeat;
 }
 
 body {
-    background: transparent;
+    background: transparent !important;
 }
 
 .custom-navbar {
@@ -60,23 +60,9 @@ body {
     margin-top: 1.5%;
 }
 
-.label{
-    text-align: center;
-}
-
-.check{
-    filter: invert(21%) sepia(54%) saturate(7422%) hue-rotate(103deg) brightness(100%) contrast(103%);
-    margin-top: 1%;
-}
-
 .form-group{
     margin-bottom: 15px;
 
-}
-
-.value{
-    color: grey;
-    font-style: italic;
 }
 
 .left{
@@ -159,10 +145,8 @@ body {
     padding-top: 2px;
 }
 
-.payment-method button:hover,
-.payment-method button:active,
-.payment-method button:focus {
-    border: 2px solid #c2c4c6;
+.payment-method button.selected{
+    border: 2px solid #86939E;
     outline: none;
 }
 
