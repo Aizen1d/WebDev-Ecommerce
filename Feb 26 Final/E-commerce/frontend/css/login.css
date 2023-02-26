@@ -1,0 +1,98 @@
+body {
+    background-image: url('/images/login/login-bg.jpg'); 
+    background-size: cover; 
+    background-repeat: no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Mongolian Baiti', sans-serif;
+}
+
+.login {
+    width: 360px;
+    height: min-content;
+    padding: 20px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.60);
+}
+
+.invalid_login{
+    text-align: center;
+    color: red;
+    font-size: 18px;
+}
+
+.login h1 {
+    font-size: 36px;
+    margin-bottom: 25px;
+    font-weight: bold;
+    letter-spacing: 10px;
+    font-family: 'Mongolian Baiti', sans-serif;
+}
+
+.login form {
+    font-size: 20px;
+}
+
+.login form .form-group {
+    margin-bottom: 12px;
+}
+
+.login form input[type="submit"] {
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+.loginbt{
+    text-align: center !important;
+    background-color:#CFC2A1;
+    color: white;
+    border-radius: 20px;
+}
+
+.loginbt:hover{
+    background-color: #B8A576;
+    color: white;
+}
+
+.butones{
+    position: relative;
+    top: -10px;
+    transition: transform .2s;
+}
+
+.butones:hover{
+    transform: scale(1.025);
+}
+
+.create{
+    text-decoration: none;
+    font-size: small;
+    color: #198754;
+}
+
+.create:hover{
+    color: #146E45;
+}
+
+.text{
+    font-size: small;
+    color: black;
+}
+
+.form-group input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.form-group input[type="checkbox"]:checked {
+    background-color: #198754;
+    border: 1px solid #198754;
+    box-shadow: inset 5px rgb(25, 135, 84, 0.25);
+}

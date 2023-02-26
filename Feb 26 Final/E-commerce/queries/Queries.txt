@@ -1,0 +1,13 @@
+UPDATE products SET image = LOAD_FILE('G:/School/3rd Year/Web Development/E-commerce/images/sample.jpg') WHERE productID = 2;
+
+UPDATE products set description = "Jacket" WHERE productID = 2
+
+
+INSERT INTO products(productID, productName, description, category, price, Image) 
+VALUES (3
+       ,"Jacket"
+       ,"Cotton Jacket"
+       ,"Hoodies"
+       ,650
+       ,LOAD_FILE('G:\School\3rd Year\Schedule.png'))
+

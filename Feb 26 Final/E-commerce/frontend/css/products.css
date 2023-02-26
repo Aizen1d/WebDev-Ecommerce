@@ -1,0 +1,60 @@
+html{
+    background-image: url('/images/Default-background.jpg'); 
+    background-size: cover; 
+    background-repeat: no-repeat;
+}
+
+body {
+    background: transparent !important;
+}
+
+.dropdown-menu {
+    margin-left: 48px;
+    min-width: 140px;
+}
+
+.title{
+    font-family: 'Raleway', sans-serif;
+    font-size: xx-large;
+    color: #C7C1A1;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 1.5%;
+}
+
+.products{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card:hover{
+    transform: scale(1.05);
+    color: black;
+    box-shadow: 0 4px 4px rgb(131, 130, 130);
+}
+
+.card{
+    text-decoration: none;
+    color: black;
+    border-radius: 20px;
+    border: transparent;
+    text-align: center;
+    font-family: 'Raleway', sans-serif;
+    transition: transform 0.2s;
+}
+
+.margin{
+    margin-left: 3.5%;
+    margin-right: 3.5%;
+    margin-bottom: 3.5%;
+}
+
+.foot{
+    background-color: #D0CCB6;
+    font-family: 'Raleway', sans-serif;
+}
+
+.copyright{
+    background-color: #C7C1A1;
+}
