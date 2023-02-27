@@ -58,9 +58,8 @@
                 </div><div class="form-group">
                     <label for="desc" class="form-label">Product Description</label>
                     <textarea type="text" id="description-product" name="description-product" class="form-control desc validate-checkout"
-                    value="<?php if(isset($_POST['productID'])) { echo $row['description']; } ?>"></textarea>
-                    <input type="hidden" id="desc-product" name="desc-product"
-                    value="<?php if(isset($_POST['productID'])) { echo $row['description']; } ?>">
+                    ><?php if(isset($_POST['productID'])) { echo $row['description']; } ?></textarea>
+                    <input type="hidden" id="desc-product" name="desc-product">
                 </div>
                 <div class="form-group">
                     <label for="color" class="form-label">Product Colors</label>
@@ -68,7 +67,7 @@
                     <select class="form-select" id="colors-select" multiple aria-label="multiple select size 1 select">
                     
                     <?php
-                        $colors = array("black", "white", "red", "blue", "pink", "green", "orange", "yellow", "purple", "multicolor"); // define the available colors
+                        $colors = array("black", "white", "red", "blue", "pink", "green"); // define the available colors
                         $selectedDesc = '';
                         if (isset($_POST['productID'])) {
                             $selectedDesc = strtolower($row['color']);
@@ -117,8 +116,13 @@
                 echo "document.getElementById('new-or-edit').name = 'new'";
             };
         ?>
-        document.getElementById('description-product').value = document.getElementById('desc-product').value
-        
+
+        var textarea = document.querySelector('#description-product');
+            textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
         const colorSelect = document.getElementById('colors-select');
         const selectedColors = Array.from(colorSelect.selectedOptions).map(option => option.value);
         document.getElementById('colors-input').value = selectedColors.join(',');
@@ -156,12 +160,6 @@
             document.getElementById('desc-product').value = document.getElementById('description-product').value
             document.getElementById('product-form').submit();
         }
-
-        var textarea = document.querySelector('#description-product');
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
     </script>
 
 
